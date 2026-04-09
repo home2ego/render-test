@@ -1,0 +1,17 @@
+# Parcel cache files
+.parcel-cache
+
+# Output directory
+dist
+
+# Node dependencies
+node_modules
+
+# Environment files
+*.env
+
+# macOS files
+.DS_Store
+
+# Editor files
+.vscode
