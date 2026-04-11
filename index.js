@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors")
 const app = express();
 
 let persons = [
@@ -29,7 +30,9 @@ const logger = (req, res, next) => {
   next();
 };
 app.use(logger);
-
+app.use(cors({
+  origin: "https://v-test.pages.dev"
+}))
 app.use(express.json());
 
 app.get("/api/persons", (req, res) => {
@@ -60,7 +63,7 @@ app.delete("/api/persons/:id", (req, res) => {
   res.sendStatus(204);
 });
 
-function generateId() {
+const generateId = () => {
   return String(Math.trunc(Math.random() * 1_000_000 + 1));
 }
 
