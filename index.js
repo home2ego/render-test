@@ -1,6 +1,4 @@
 const express = require("express");
-const cors = require("cors");
-
 const app = express();
 
 let persons = [
@@ -26,9 +24,6 @@ let persons = [
   },
 ];
 
-app.use(cors());
-app.use(express.json());
-
 const logger = (req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
@@ -36,6 +31,7 @@ const logger = (req, res, next) => {
 app.use(logger);
 
 app.use(express.static("dist"));
+app.use(express.json());
 
 app.get("/api/persons", (req, res) => {
   res.json(persons);
