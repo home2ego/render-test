@@ -3,11 +3,6 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 const app = express();
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-  }),
-);
 
 let persons = [
   {
@@ -32,6 +27,12 @@ let persons = [
   },
 ];
 
+app.use(express.static("dist"));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  }),
+);
 app.use(express.json());
 morgan.token("body", (req) => {
   return req.method === "POST" ? JSON.stringify(req.body) : " ";
