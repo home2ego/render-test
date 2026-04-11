@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require("cors")
+const cors = require("cors");
 const app = express();
 
 let persons = [
@@ -25,17 +25,19 @@ let persons = [
   },
 ];
 
-const logger = (req, res, next) => {
+const logger = (req, _, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 };
 app.use(logger);
-app.use(cors({
-  origin: "https://v-test.pages.dev"
-}))
+app.use(
+  cors({
+    origin: "https://v-test.pages.dev",
+  }),
+);
 app.use(express.json());
 
-app.get("/api/persons", (req, res) => {
+app.get("/api/persons", (_, res) => {
   res.json(persons);
 });
 
@@ -53,19 +55,18 @@ app.get("/api/persons/:id", (req, res) => {
 app.delete("/api/persons/:id", (req, res) => {
   const id = req.params.id;
 
-  const personExists = persons.some((p) => p.id === id);
-  if (!personExists) {
+  const personToDelete = persons.find((p) => p.id === id);
+  if (!personToDelete) {
     return res.status(404).json({ error: "Person not found" });
   }
 
   persons = persons.filter((p) => p.id !== id);
-
-  res.sendStatus(204);
+  res.json(personToDelete);
 });
 
 const generateId = () => {
   return String(Math.trunc(Math.random() * 1_000_000 + 1));
-}
+};
 
 app.post("/api/persons", (req, res) => {
   const person = req.body;
@@ -94,7 +95,7 @@ app.post("/api/persons", (req, res) => {
   res.status(201).json(newPerson);
 });
 
-const unknownEndpoint = (req, res) => {
+const unknownEndpoint = (_, res) => {
   res.status(404).json({ error: "Unknown endpoint" });
 };
 app.use(unknownEndpoint);
