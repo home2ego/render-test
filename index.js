@@ -30,18 +30,10 @@ const logger = (req, res, next) => {
 };
 app.use(logger);
 
-app.use(express.static("dist"));
 app.use(express.json());
 
 app.get("/api/persons", (req, res) => {
   res.json(persons);
-});
-
-app.get("/info", (req, res) => {
-  const html = `<p>Phonebook has info for ${persons.length} people</p>
-<p>${new Date().toString()}</p>`;
-
-  res.send(html);
 });
 
 app.get("/api/persons/:id", (req, res) => {
