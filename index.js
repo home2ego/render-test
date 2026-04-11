@@ -1,5 +1,4 @@
 const express = require("express");
-const morgan = require("morgan");
 const cors = require("cors");
 
 const app = express();
@@ -28,15 +27,15 @@ let persons = [
 ];
 
 app.use(cors());
-app.use(express.static("dist"));
 app.use(express.json());
 
-morgan.token("body", (req) => {
-  return req.method === "POST" ? JSON.stringify(req.body) : " ";
-});
-app.use(
-  morgan(":method :url :status :res[content-length] - :response-time ms :body"),
-);
+const logger = (req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+};
+app.use(logger);
+
+app.use(express.static("dist"));
 
 app.get("/api/persons", (req, res) => {
   res.json(persons);
