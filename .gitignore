@@ -2,7 +2,7 @@
 .parcel-cache
 
 # Output directory
-dist
+# dist
 
 # Node dependencies
 node_modules
