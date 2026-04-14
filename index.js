@@ -6,31 +6,31 @@ const app = express();
 
 app.use(express.json());
 
-app.get("/", (_, response) => {
-  response.send("<h1>Hello World!</h1>");
+app.get("/", (_, res) => {
+  res.send("<h1>Hello World!</h1>");
 });
 
-app.get("/api/notes", (_, response) => {
-  Note.find({}).then((notes) => response.json(notes));
+app.get("/api/notes", (_, res) => {
+  Note.find({}).then((notes) => res.json(notes));
 });
 
-app.get("/api/notes/:id", (request, response) => {
-  Note.findById(request.params.id)
+app.get("/api/notes/:id", (req, res) => {
+  Note.findById(req.params.id)
     .then((note) => {
       if (note) {
-        return response.json(note);
+        return res.json(note);
       }
 
-      response.status(404).send("note not found");
+      res.status(404).send("note not found");
     })
-    .catch(() => response.status(404).send("note not found"));
+    .catch(() => res.status(404).send("note not found"));
 });
 
-app.post("/api/notes", (request, response) => {
-  const body = request.body;
+app.post("/api/notes", (req, res) => {
+  const body = req.body;
 
   if (!body.content) {
-    return response.status(400).send("content missing");
+    return res.status(400).send("content missing");
   }
 
   const note = new Note({
@@ -38,14 +38,14 @@ app.post("/api/notes", (request, response) => {
     important: body.important || false,
   });
 
-  note.save().then((savedNote) => response.json(savedNote));
+  note.save().then((savedNote) => res.json(savedNote));
 });
 
-app.delete("/api/notes/:id", (request, response) => {
-  const id = request.params.id;
+app.delete("/api/notes/:id", (req, res) => {
+  const id = req.params.id;
   notes = notes.filter((note) => note.id !== id);
 
-  response.status(204).end();
+  res.status(204).end();
 });
 
 const PORT = process.env.PORT;
