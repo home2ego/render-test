@@ -53,13 +53,12 @@ app.delete("/api/notes/:id", (req, res) => {
     .catch(() => res.status(404).send("note not found"));
 });
 
-app.put("api/notes/:id", (req, res) => {
-  const id = req.params.id;
+app.put("/api/notes/:id", (req, res) => {
   const { content, important } = req.body;
 
-  Note.findByIdAndUpdate(id, { content, important }, { new: true, runValidators: true }).then((updatedNote) =>
-    console.log(updatedNote),
-  );
+  Note.findByIdAndUpdate(req.params.id, { content, important }, { new: true })
+    .then((updatedNote) => (updatedNote ? res.json(updatedNote) : res.status(404).send("note not found")))
+    .catch(() => res.status(404).send("note not found"));
 });
 
 const PORT = process.env.PORT;
