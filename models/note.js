@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.set("strictQuery", false);
+mongoose.set("strictQuery", false); // true — unknown fields while filtering will be neglected — Note.find({ hobby: "GYM" })) => Note.find({})
 
 const url = process.env.MONGODB_URL;
 
