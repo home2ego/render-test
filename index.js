@@ -61,6 +61,10 @@ app.put("/api/notes/:id", (req, res) => {
     .catch(() => res.status(404).send("note not found"));
 });
 
+app.use((req, res) => {
+  res.status(404).send(`cannot ${req.method} ${req.originalUrl}`);
+});
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`server running on port ${PORT}`);
