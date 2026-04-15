@@ -42,10 +42,9 @@ app.post("/api/notes", (req, res) => {
 });
 
 app.delete("/api/notes/:id", (req, res) => {
-  const id = req.params.id;
-  notes = notes.filter((note) => note.id !== id);
-
-  res.status(204).end();
+  Note.findByIdAndDelete(req.params.id)
+    .then((deletedNote) => (deletedNote ? res.sendStatus(204) : res.status(404).send("note not found")))
+    .catch(() => res.status(404).send("note not found"));
 });
 
 const PORT = process.env.PORT;
