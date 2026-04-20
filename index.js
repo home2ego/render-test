@@ -33,18 +33,20 @@ app.post("/api/notes", (req, res) => {
     return res.status(400).send("content missing");
   }
 
-  Note.findOne({ content }).then((existingNote) => {
-    if (existingNote) {
-      return res.status(400).send("content already exists");
-    }
+  Note.findOne({ content })
+    .collation({ locale: "en", strength: 2 })
+    .then((existingNote) => {
+      if (existingNote) {
+        return res.status(400).send("content already exists");
+      }
 
-    const note = new Note({
-      content,
-      important: important || false,
+      const note = new Note({
+        content,
+        important: important || false,
+      });
+
+      note.save().then((savedNote) => res.status(201).json(savedNote));
     });
-
-    note.save().then((savedNote) => res.status(201).json(savedNote));
-  });
 });
 
 app.delete("/api/notes/:id", (req, res) => {
