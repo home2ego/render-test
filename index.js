@@ -24,7 +24,7 @@ app.get("/api/notes/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.post("/api/notes", (req, res) => {
+app.post("/api/notes", (req, res, next) => {
   const { content, important } = req.body;
 
   if (!content) return res.status(400).send("content missing");
@@ -36,7 +36,10 @@ app.post("/api/notes", (req, res) => {
 
       const newNote = new Note({ content, important: important || false });
 
-      newNote.save().then((savedNote) => res.status(201).json(savedNote));
+      newNote
+        .save()
+        .then((savedNote) => res.status(201).json(savedNote))
+        .catch((err) => next(err));
     });
 });
 
@@ -73,6 +76,10 @@ app.use((err, _, res, __) => {
 
   if (err.name === "CastError") {
     res.status(400).send("malformatted id");
+  }
+
+  if (err.name === "ValidationError") {
+    res.status(400).send(err.message);
   }
 });
 
