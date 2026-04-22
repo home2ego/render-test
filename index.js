@@ -74,12 +74,13 @@ app.use((req, res) => {
 app.use((err, _, res, __) => {
   console.log(err.name);
 
-  if (err.name === "CastError") {
-    res.status(400).send("malformatted id");
-  }
-
-  if (err.name === "ValidationError") {
-    res.status(400).send(err.message);
+  switch (err.name) {
+    case "CastError":
+      res.status(400).send("malformatted id");
+      break;
+    case "ValidationError":
+      res.status(400).send(err.message);
+      break;
   }
 });
 
