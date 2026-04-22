@@ -12,10 +12,7 @@ mongoose
 const noteSchema = new mongoose.Schema({
   content: {
     type: String,
-    validate: {
-      validator: (v) => v.length >= 5,
-      message: (props) => `${props.value} is shorter than the minimum required length (5)`,
-    },
+    minlength: [5, "{VALUE} is shorter than the minimum required length (5)"],
   },
   important: Boolean,
 });
