@@ -36,20 +36,15 @@ app.post("/api/notes", (req, res, next) => {
 
       const newNote = new Note({ content, important: important || false });
 
-      newNote
-        .save()
-        .then((savedNote) => res.status(201).json(savedNote))
-        .catch((err) => next(err));
-    });
+      return newNote.save();
+    })
+    .then((savedNote) => res.status(201).json(savedNote))
+    .catch((err) => next(err));
 });
 
 app.delete("/api/notes/:id", (req, res, next) => {
   Note.findByIdAndDelete(req.params.id)
-    .then((deletedNote) =>
-      deletedNote
-        ? res.sendStatus(204)
-        : res.status(404).send("note not found"),
-    )
+    .then((deletedNote) => (deletedNote ? res.sendStatus(204) : res.status(404).send("note not found")))
     .catch((err) => next(err));
 });
 
@@ -72,14 +67,12 @@ app.use((req, res) => {
   res.status(404).send(`cannot ${req.method} ${req.originalUrl}`);
 });
 app.use((err, _, res, __) => {
-  console.log(err.name);
-
   switch (err.name) {
     case "CastError":
       res.status(400).send("malformatted id");
       break;
     case "ValidationError":
-      res.status(400).send(err.message);
+      res.status(400).send(err.errors.content.message);
       break;
   }
 });

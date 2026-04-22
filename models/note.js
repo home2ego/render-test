@@ -10,7 +10,13 @@ mongoose
   .catch((error) => console.log("error connecting to MongoDB:", error.message));
 
 const noteSchema = new mongoose.Schema({
-  content: { type: String, minLength: 5, required: true },
+  content: {
+    type: String,
+    validate: {
+      validator: (v) => v.length >= 5,
+      message: (props) => `${props.value} is shorter than the minimum required length (5)`,
+    },
+  },
   important: Boolean,
 });
 
