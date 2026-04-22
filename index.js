@@ -14,57 +14,66 @@ app.get("/api/notes", (_, res) => {
   Note.find({}).then((notes) => res.json(notes));
 });
 
-app.get("/api/notes/:id", (req, res) => {
+app.get("/api/notes/:id", (req, res, next) => {
   Note.findById(req.params.id)
     .then((note) => {
-      if (note) {
-        return res.json(note);
-      }
+      if (note) return res.json(note);
 
       res.status(404).send("note not found");
     })
-    .catch(() => res.status(404).send("note not found"));
+    .catch((err) => next(err));
 });
 
 app.post("/api/notes", (req, res) => {
   const { content, important } = req.body;
 
-  if (!content) {
-    return res.status(400).send("content missing");
-  }
+  if (!content) return res.status(400).send("content missing");
 
   Note.findOne({ content })
     .collation({ locale: "en", strength: 2 })
-    .then((existingNote) => {
-      if (existingNote) {
-        return res.status(400).send("content already exists");
-      }
+    .then((note) => {
+      if (note) return res.status(400).send("content already exists");
 
-      const note = new Note({
-        content,
-        important: important || false,
-      });
+      const newNote = new Note({ content, important: important || false });
 
-      note.save().then((savedNote) => res.status(201).json(savedNote));
+      newNote.save().then((savedNote) => res.status(201).json(savedNote));
     });
 });
 
-app.delete("/api/notes/:id", (req, res) => {
+app.delete("/api/notes/:id", (req, res, next) => {
   Note.findByIdAndDelete(req.params.id)
-    .then((deletedNote) => (deletedNote ? res.sendStatus(204) : res.status(404).send("note not found")))
-    .catch(() => res.status(404).send("note not found"));
+    .then((deletedNote) =>
+      deletedNote
+        ? res.sendStatus(204)
+        : res.status(404).send("note not found"),
+    )
+    .catch((err) => next(err));
 });
 
-app.put("/api/notes/:id", (req, res) => {
+app.put("/api/notes/:id", (req, res, next) => {
   const { content, important } = req.body;
 
-  Note.findByIdAndUpdate(req.params.id, { content, important }, { new: true })
-    .then((updatedNote) => (updatedNote ? res.json(updatedNote) : res.status(404).send("note not found")))
-    .catch(() => res.status(404).send("note not found"));
+  Note.findById(req.params.id)
+    .then((note) => {
+      if (!note) return res.status(404).send("note not found");
+
+      note.content = content;
+      note.important = important;
+
+      note.save().then((updatedNote) => res.json(updatedNote));
+    })
+    .catch((err) => next(err));
 });
 
 app.use((req, res) => {
   res.status(404).send(`cannot ${req.method} ${req.originalUrl}`);
+});
+app.use((err, _, res, __) => {
+  console.log(err.name);
+
+  if (err.name === "CastError") {
+    res.status(400).send("malformatted id");
+  }
 });
 
 const PORT = process.env.PORT;
