@@ -77,6 +77,6 @@ app.use((err, _, res, __) => {
   }
 });
 
-app.listen(PORT, () => {
+app.listen(config.PORT, () => {
   console.log(`server running on port ${config.PORT}`);
 });
