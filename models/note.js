@@ -1,23 +1,22 @@
-const mongoose = require("mongoose");
+const config = require('../utils/config');
+const mongoose = require('mongoose');
 
-mongoose.set("strictQuery", false); // true — unknown fields while filtering will be neglected — Note.find({ hobby: "GYM" })) => Note.find({})
-
-const url = process.env.MONGODB_URL;
+mongoose.set('strictQuery', false); // true — unknown fields while filtering will be neglected — Note.find({ hobby: "GYM" })) => Note.find({})
 
 mongoose
-  .connect(url, { family: 4 })
-  .then(() => console.log("connected to MongoDB"))
-  .catch((error) => console.log("error connecting to MongoDB:", error.message));
+  .connect(config.MONGODB_URL, { family: 4 })
+  .then(() => console.log('connected to MongoDB'))
+  .catch((error) => console.log('error connecting to MongoDB:', error.message));
 
 const noteSchema = new mongoose.Schema({
   content: {
     type: String,
-    minlength: [5, "{VALUE} is shorter than the minimum required length (5)"],
+    minlength: [5, '{VALUE} is shorter than the minimum required length (5)'],
   },
   important: Boolean,
 });
 
-noteSchema.set("toJSON", {
+noteSchema.set('toJSON', {
   transform: (_, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
@@ -25,4 +24,4 @@ noteSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Note", noteSchema);
+module.exports = mongoose.model('Note', noteSchema);
