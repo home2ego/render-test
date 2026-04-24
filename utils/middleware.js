@@ -11,8 +11,6 @@ const unknownEndpoint = (req, res) => {
 };
 
 const errorHandler = (err, _req, res, _next) => {
-  logger.info(err.name); // remove
-
   switch (err.name) {
     case 'CastError':
       res.status(400).send('malformatted id');
