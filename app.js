@@ -11,8 +11,8 @@ logger.info('connecting to', config.MONGODB_URL);
 
 mongoose
   .connect(config.MONGODB_URL, { family: 4 })
-  .then(() => console.log('connected to MongoDB'))
-  .catch((error) => console.log('error connecting to MongoDB:', error.message));
+  .then(() => logger.info('connected to MongoDB'))
+  .catch((error) => logger.info('error connecting to MongoDB:', error.message));
 
 app.use(express.json());
 app.use(middleware.requestLogger);
