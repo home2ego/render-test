@@ -16,22 +16,24 @@ notesRouter.get('/:id', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-notesRouter.post('/', (req, res, next) => {
-  const { content, important } = req.body;
+notesRouter.post('/', async (req, res, next) => {
+  try {
+    const { content, important } = req.body;
 
-  if (!content) return res.status(400).send('content missing');
+    if (!content) return res.status(400).send('content missing');
 
-  Note.findOne({ content })
-    .collation({ locale: 'en', strength: 2 })
-    .then((note) => {
-      if (note) return res.status(400).send('content already exists');
+    const existingNote = await Note.findOne({ content }).collation({ locale: 'en', strength: 2 });
 
-      const newNote = new Note({ content, important: important || false });
+    if (existingNote) return res.status(400).send('content already exists');
 
-      return newNote.save();
-    })
-    .then((savedNote) => res.status(201).json(savedNote))
-    .catch((err) => next(err));
+    const newNote = new Note({ content, important: important || false });
+
+    const savedNote = await newNote.save();
+
+    res.status(201).json(savedNote);
+  } catch (err) {
+    next(err);
+  }
 });
 
 notesRouter.delete('/:id', (req, res, next) => {
