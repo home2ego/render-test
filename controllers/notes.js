@@ -6,14 +6,12 @@ notesRouter.get('/', async (_req, res) => {
   res.json(notes);
 });
 
-notesRouter.get('/:id', (req, res, next) => {
-  Note.findById(req.params.id)
-    .then((note) => {
-      if (note) return res.json(note);
+notesRouter.get('/:id', async (req, res) => {
+  const note = await Note.findById(req.params.id);
 
-      res.status(404).send('note not found');
-    })
-    .catch((err) => next(err));
+  if (note) return res.json(note);
+
+  res.status(404).send('note not found');
 });
 
 notesRouter.post('/', async (req, res) => {
