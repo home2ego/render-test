@@ -57,7 +57,7 @@ test('a valid note can be added ', async () => {
   assert(contents.includes('async/await simplifies making async calls'));
 });
 
-test('note without content is not added', async () => {
+test('a note without content is not added', async () => {
   const newNote = {
     important: true,
   };
@@ -79,6 +79,20 @@ test('a specific note can be viewed', async () => {
     .expect('Content-Type', /application\/json/);
 
   assert.deepStrictEqual(response.body, noteToView);
+});
+
+test('a note can be deleted', async () => {
+  const notesAtStart = await helper.notesInDb();
+  const noteToDelete = notesAtStart[0];
+
+  await api.delete(`/api/notes/${noteToDelete.id}`).expect(204);
+
+  const notesAtEnd = await helper.notesInDb();
+
+  const ids = notesAtEnd.map((n) => n.id);
+  assert(!ids.includes(noteToDelete.id));
+
+  assert.deepStrictEqual(notesAtEnd.length, helper.initialNotes.length - 1);
 });
 
 after(async () => {

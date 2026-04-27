@@ -30,10 +30,12 @@ notesRouter.post('/', async (req, res) => {
   res.status(201).json(savedNote);
 });
 
-notesRouter.delete('/:id', (req, res, next) => {
-  Note.findByIdAndDelete(req.params.id)
-    .then((deletedNote) => (deletedNote ? res.sendStatus(204) : res.status(404).send('note not found')))
-    .catch((err) => next(err));
+notesRouter.delete('/:id', async (req, res) => {
+  const deletedNote = await Note.findByIdAndDelete(req.params.id);
+
+  if (deletedNote) return res.sendStatus(204);
+
+  res.status(404).send('note not found');
 });
 
 notesRouter.put('/:id', (req, res, next) => {
