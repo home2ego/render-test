@@ -10,15 +10,25 @@ const api = supertest(app);
 
 beforeEach(async () => {
   await Note.deleteMany({});
+  console.log('cleared');
 
-  let newObject = new Note(helper.initialNotes[0]);
-  await newObject.save();
+  //   const noteObjects = helper.initialNotes.map((n) => new Note(n));
+  //   const promiseArray = noteObjects.map((n) => n.save());
+  //   await Promise.all(promiseArray);
 
-  newObject = new Note(helper.initialNotes[1]);
-  await newObject.save();
+  //   for (const note of helper.initialNotes) {
+  //     const noteObject = new Note(note);
+  //     await noteObject.save();
+  //   }
+
+  await Note.insertMany(helper.initialNotes);
+
+  console.log('done');
 });
 
-test('notes are returned as json', async () => {
+test.only('notes are returned as json', async () => {
+  console.log('entered test');
+
   await api
     .get('/api/notes')
     .expect(200)
